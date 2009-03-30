@@ -5,6 +5,7 @@ require 'json'
 
 configure :test do
   @@db = "http://localhost:5984/eee-test"
+  set :views, 'views'
 end
 
 configure :development, :production do
