@@ -52,6 +52,48 @@ Given /^a recipe for Crockpot Lentil Andouille Soup$/ do
     :content_type => 'application/json'
 end
 
+Given /^a recipe for Chicken Noodle Soup$/ do
+  @date = Date.new(2009, 4, 1)
+  @title = "Chicken Noodle Soup"
+  @permalink = @date.to_s + "-" + @title.downcase.gsub(/\W/, '-')
+
+  recipe = {
+    :title => @title,
+    :date  => @date,
+    :tools => [
+       {
+           "title"        => "Bowl",
+           "asin"         => nil,
+           "amazon_title" => nil
+       },
+       {
+           "title"        => "Colander",
+           "asin"         => nil,
+           "amazon_title" => nil
+       },
+       {
+           "title"        => "Cutting Board",
+           "asin"         => nil,
+           "amazon_title" => nil
+       },
+       {
+           "title"        => "Pot",
+           "asin"         => nil,
+           "amazon_title" => nil
+       },
+       {
+           "title"        => "Skimmer",
+           "asin"         => nil,
+           "amazon_title" => nil
+       },
+    ]
+  }
+
+  RestClient.put "#{@@db}/#{@permalink}",
+    recipe.to_json,
+    :content_type => 'application/json'
+end
+
 When /^I view the recipe$/ do
   visit("/recipes/#{@permalink}")
 end
@@ -65,5 +107,18 @@ Then /^I should see an ingredient of "(.+)"$/ do |ingredient|
 end
 
 Then /^I should see 15 minutes of prep time$/ do
-  pending
+  response.should contain("Preparation Time: 15 minutes")
+end
+
+Then /^I should see that it requires 5 hours of non\-active cook time$/ do
+  response.should contain("Inactive Time: 5 hours")
+end
+
+Then /^I should see that it requires (.+) to prepare$/ do |tool_list|
+  tools = tool_list.
+    split(/\s*(,|and)\s*/).
+    reject{|str| str == "," || str == "and"}
+  tools.each do |tool|
+    response.should contain(tool.sub(/an? /, ''))
+  end
 end
