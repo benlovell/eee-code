@@ -12,7 +12,7 @@ describe "eee" do
   end
 
   describe "a CouchDB recipe" do
-    before (:each) do
+    before(:each) do
       @date = Date.today
       @title = "Recipe Title"
       @permalink = @date.to_s + "-" + @title.downcase.gsub(/\W/, '-')
